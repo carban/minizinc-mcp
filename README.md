@@ -152,6 +152,17 @@ asyncio.run(main())
 "
 ```
 
+## Running the tests
+
+Install the test dependencies, then run the suite:
+
+```sh
+uv sync --group dev
+uv run pytest -q
+```
+
+The tests in `tests/` launch the server end-to-end over stdio and call every tool through the MCP protocol, solving the example model in `example/`. They need a working [MiniZinc](https://www.minizinc.org/) install (the same prerequisite as for developers).
+
 ## Notes and limitations
 
 - `params` follows JSON representation: JSON arrays map to MiniZinc arrays; numbers, strings, and booleans map to their native MiniZinc types. Exotic types like sets and enums are not fully expressible this way.

@@ -1,0 +1,60 @@
+import asyncio
+from pathlib import Path
+
+from mcp import Client
+from mcp.client.stdio import StdioServerParameters
+
+REPO = Path(__file__).resolve().parents[1]
+MODEL = REPO / "example" / "production_planning.mzn"
+DATA = {
+    "nproducts": 2,
+    "profit": [400, 450],
+    "pname": ["banana-cake", "chocolate-cake"],
+    "nresources": 5,
+    "capacity": [4000, 6, 2000, 500, 500],
+    "rname": ["flour", "banana", "sugar", "butter", "cocoa"],
+    "consumption": [[250, 2, 75, 100, 0], [200, 0, 150, 150, 75]],
+}
+PARAMS = StdioServerParameters(command="uv", args=["run", "minizinc-mcp"], cwd=str(REPO))
+
+
+def run(coro):
+    return asyncio.run(coro)
+
+
+async def tool(name, arguments=None):
+    async with Client(PARAMS) as client:
+        result = await client.call_tool(name, arguments)
+        return "\n".join(part.text for part in result.content if hasattr(part, "text"))
+
+
+async def tool_names():
+    async with Client(PARAMS) as client:
+        names = await client.list_tools()
+        return {t.name for t in names.tools}
+
+
+def test_tools_are_registered():
+    names = run(tool_names())
+    assert {"list_solvers", "validate_model", "solve_model", "solve_model_by_path"} <= names
+
+
+def test_list_solvers():
+    assert "gecode" in run(tool("list_solvers"))
+
+
+def test_validate_model():
+    assert "VALID" in run(tool("validate_model", {"model_code": MODEL.read_text()}))
+
+
+def test_solve_model():
+    out = run(tool("solve_model", {"model_code": MODEL.read_text(), "params": DATA}))
+    assert "OPTIMAL_SOLUTION" in out
+    assert '"objective": 1700' in out
+
+
+def test_solve_model_by_path():
+    data_path = REPO / "example" / "production_planning.dzn"
+    out = run(tool("solve_model_by_path", {"model_path": str(MODEL), "data_path": str(data_path)}))
+    assert "OPTIMAL_SOLUTION" in out
+    assert '"objective": 1700' in out
