@@ -77,11 +77,13 @@ The server runs over stdio. Tell your MCP client to launch it:
 
 ### 4. Verify it works
 
-Restart your client. Four tools should now be available, prefixed with `minizinc_`: 
+Restart your client. Six tools should now be available, prefixed with `minizinc_`: 
 - `minizinc_list_solvers`
 - `minizinc_validate_model`
 - `minizinc_solve_model`
 - `minizinc_solve_model_by_path`
+- `minizinc_get_model_info`
+- `minizinc_get_flatzinc`
 
 Quick sanity check — ask your client: _"list the available MiniZinc solvers"_. You should see `gecode`, `chuffed`, `highs`, and anything else installed on the machine.
 
@@ -95,6 +97,8 @@ Quick sanity check — ask your client: _"list the available MiniZinc solvers"_.
 | `validate_model` | Parses and type-checks MiniZinc model code **without solving it**. Useful for checking model syntax up front. Returns `VALID` or `INVALID` with an error message. |
 | `solve_model` | Solves a MiniZinc model given as source code: once, exhaustively (`all_solutions`), or with a solution / time limit. Returns the status, solution(s), objective value (for optimization problems), and solver statistics. |
 | `solve_model_by_path` | Same as `solve_model` but loads the model and its optional data (`.dzn`) file from paths instead of source code. |
+| `get_model_info` | Inspects a model **without solving it**: returns its solve method (satisfy/minimize/maximize) and the declared input parameters and output variables with their types. Useful for an agent to know exactly which `params` a model expects. |
+| `get_flatzinc` | Compiles a model (and optional data) to FlatZinc text without solving it. Returns the `.fzn` model, the `.ozn` output model, and flattening statistics. Useful for debugging and low-level inspection. |
 
 ### `solve_model` arguments
 

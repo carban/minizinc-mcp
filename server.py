@@ -4,6 +4,7 @@ import dataclasses
 import datetime
 import json
 import os
+from pathlib import Path
 
 import minizinc
 from mcp.server import MCPServer
@@ -47,6 +48,27 @@ def _statistics_to_dict(statistics: dict) -> dict:
         else:
             result[key] = value
     return result
+
+
+_MZN_TYPE_NAMES = {int: "int", bool: "bool", float: "float", str: "string"}
+
+
+def _type_str(t) -> str:
+    """Render a Python type (as returned by Instance.analyse) as a short type string."""
+    if isinstance(t, type):
+        return _MZN_TYPE_NAMES.get(t, t.__name__)
+    origin = getattr(t, "__origin__", None)
+    args = getattr(t, "__args__", ())
+    if origin is not None:
+        name = getattr(origin, "__name__", str(origin))
+        if name == "list":
+            return "array of " + (_type_str(args[0]) if args else "?")
+        if name == "set":
+            return "set of " + (_type_str(args[0]) if args else "?")
+        if args:
+            return f"{name}[{', '.join(_type_str(a) for a in args)}]"
+        return name
+    return str(t)
 
 
 def _result_to_dict(result: minizinc.Result) -> dict:
@@ -197,6 +219,84 @@ def solve_model_by_path(
 
         result = instance.solve(**solve_kwargs)
         return _result_to_dict(result)
+    except Exception as exc:
+        return {"status": "ERROR", "error": str(exc)}
+
+
+@mcp.tool(
+    name="get_model_info",
+    description="Describe a MiniZinc model without solving it",
+    annotations=ToolAnnotations(open_world_hint=False),
+)
+def get_model_info(model_code: str, params: dict | str | None = None) -> dict:
+    """Parse a MiniZinc model and return its solve method, declared parameters,
+    and output variables with their types, without solving it.
+
+    Args:
+        model_code: The MiniZinc (.mzn) source code of the model.
+        params: Optional parameter assignments (dict or JSON string), used to
+            type-check already-assigned parameters.
+
+    Returns:
+        A dict with "method" (satisfy/minimize/maximize), "input" mapping
+        parameter names to type strings, and "output" mapping variable names
+        to type strings. On error, a dict with status "ERROR" and an error
+        message.
+    """
+    try:
+        model = minizinc.Model()
+        model.add_string(model_code)
+        instance = minizinc.Instance(minizinc.Solver.lookup(DEFAULT_SOLVER), model)
+        if params:
+            _set_params(instance, params)
+        instance.analyse()
+        return {
+            "method": instance.method.name.lower(),
+            "input": {name: _type_str(t) for name, t in instance.input.items()},
+            "output": {
+                name: _type_str(t)
+                for name, t in instance.output.items()
+                if not name.startswith("_")
+            },
+        }
+    except Exception as exc:
+        return {"status": "ERROR", "error": str(exc)}
+
+
+@mcp.tool(
+    name="get_flatzinc",
+    description="Flatten a MiniZinc model to FlatZinc without solving it",
+    annotations=ToolAnnotations(open_world_hint=False),
+)
+def get_flatzinc(
+    model_code: str,
+    params: dict | str | None = None,
+    optimisation_level: int | None = None,
+) -> dict:
+    """Compile a MiniZinc model (and optional data) to FlatZinc text.
+
+    Args:
+        model_code: The MiniZinc (.mzn) source code of the model.
+        params: Optional parameter assignments (dict or JSON string).
+        optimisation_level: MiniZinc compiler optimisation level 0-5.
+
+    Returns:
+        A dict with "flat_model" (the .fzn text), "output_model" (the .ozn
+        text) and "statistics" from flattening. On error, a dict with status
+        "ERROR" and an error message.
+    """
+    try:
+        model = minizinc.Model()
+        model.add_string(model_code)
+        instance = minizinc.Instance(minizinc.Solver.lookup(DEFAULT_SOLVER), model)
+        if params:
+            _set_params(instance, params)
+        with instance.flat(optimisation_level=optimisation_level) as (fzn, ozn, statistics):
+            return {
+                "flat_model": Path(fzn.name).read_text(),
+                "output_model": Path(ozn.name).read_text(),
+                "statistics": _statistics_to_dict(statistics),
+            }
     except Exception as exc:
         return {"status": "ERROR", "error": str(exc)}
 
