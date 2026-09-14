@@ -3,8 +3,7 @@
   "mcp": {
     "minizinc": {
       "type": "local",
-      "command": ["uv", "run", "--project", ".", "python", "server.py"],
-      "cwd": "."
+      "command": ["uvx", "--from", "https://github.com/carban/mzn-mcp", "minizinc-mcp"]
     }
   }
 }

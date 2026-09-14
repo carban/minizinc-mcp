@@ -1,8 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "minizinc-mcp"
 version = "0.1.0"
-requires-python = ">=3.14"
+description = "MCP server that exposes MiniZinc constraint solving to LLM clients"
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "mcp[cli]>=2,<3",
     "minizinc>=0.9,<1",
 ]
+
+[project.scripts]
+minizinc-mcp = "server:main"

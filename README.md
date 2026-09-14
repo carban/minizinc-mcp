@@ -1,18 +1,89 @@
 # MiniZinc MCP Server
 
-An [MCP](https://modelcontextprotocol.io) server that exposes [MiniZinc](https://www.minizinc.org/) constraint solving and optimization to LLM clients such as opencode. It lets an agent parse, type-check, and solve MiniZinc models directly from a chat session.
+An [MCP](https://modelcontextprotocol.io) server that exposes [MiniZinc](https://www.minizinc.org/) constraint solving and optimization to LLM clients such as opencode, Claude Desktop, and Cursor. It lets an agent parse, type-check, and solve MiniZinc models directly from a chat session.
 
 Built with the [MCP Python SDK v2](https://py.sdk.modelcontextprotocol.io/) and the [`.mzn` Python binding](https://pypi.org/project/minizinc/).
 
-## Prerequisites
+---
 
-- Python 3.10+ (developed against 3.14)
-- [MiniZinc](https://www.minizinc.org/) 2.6+ with the `minizinc` executable on `PATH` (includes a default solver such as Gecode)
-- [uv](https://docs.astral.sh/uv/) (dependency management; `pip` works too)
+## Install for other developers
+
+### 1. Prerequisites
+
+Only two things need to be installed, **once per machine**:
+
+- **[uv](https://docs.astral.sh/uv/)** — `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **[MiniZinc](https://www.minizinc.org/)** 2.6+ with the `minizinc` executable on `PATH` (includes a default solver, Gecode)
+
+Everything else is fetched automatically by `uv` — there is **no clone, no venv setup, and no manual `pip install`** on your side.
+
+### 2. Install the server (pick one)
+
+Install it globally (best if you use it in several projects):
+
+```sh
+uv tool install --from https://github.com/carban/mzn-mcp minizinc-mcp
+```
+
+Or run it on demand each time, with nothing installed:
+
+```sh
+uvx --from https://github.com/carban/mzn-mcp minizinc-mcp
+```
+
+### 3. Wire it into your MCP client
+
+The server runs over stdio. Tell your MCP client to launch it:
+
+**opencode — project level** (add this to `opencode.jsonc` in your project):
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "minizinc": {
+      "type": "local",
+      "command": ["uvx", "--from", "https://github.com/carban/mzn-mcp", "minizinc-mcp"]
+    }
+  }
+}
+```
+
+**opencode — global** (add the same `mcp.minizinc` block to `~/.config/opencode/opencode.json`):
+
+```jsonc
+{
+  "mcp": {
+    "minizinc": {
+      "type": "local",
+      "command": ["uvx", "--from", "https://github.com/carban/mzn-mcp", "minizinc-mcp"]
+    }
+  }
+}
+```
+
+**Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "minizinc": {
+      "command": "uvx",
+      "args": ["--from", "https://github.com/carban/mzn-mcp", "minizinc-mcp"]
+    }
+  }
+}
+```
+
+### 4. Verify it works
+
+Restart your client. Four tools should now be available, prefixed with `minizinc_`: `minizinc_list_solvers`, `minizinc_validate_model`, `minizinc_solve_model`, and `minizinc_solve_model_by_path`.
+
+Quick sanity check — ask your client: _"list the available MiniZinc solvers"_. You should see `gecode`, `chuffed`, `highs`, and anything else installed on the machine.
+
+---
 
 ## What it does
-
-The server exposes three tools:
 
 | Tool | Description |
 |---|---|
@@ -45,15 +116,17 @@ The result is a JSON object like:
 
 `status` is one of `SATISFIED`, `OPTIMAL_SOLUTION`, `ALL_SOLUTIONS`, `UNSATISFIABLE`, `UNKNOWN`, or `ERROR`. `validate_model` and `solve_model` never raise in normal operation — errors are returned inside the result dict.
 
-## Setup
+---
+
+## Developing locally
+
+Clone the repo, then:
 
 ```sh
 uv sync          # create the environment and install mcp + minizinc
 ```
 
-## Running standalone
-
-The server speaks the MCP **stdio** transport, so it is launched as a subprocess by an MCP client. Run it like any other MCP server with the SDK inspector:
+The server speaks the MCP **stdio** transport, so it is launched as a subprocess by an MCP client. Run it with the SDK inspector:
 
 ```sh
 uv run mcp dev server.py
@@ -78,27 +151,6 @@ async def main():
 asyncio.run(main())
 "
 ```
-
-## Using it with opencode
-
-A project-level `opencode.jsonc` already registers the server:
-
-```jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "minizinc": {
-      "type": "local",
-      "command": ["uv", "run", "--project", ".", "python", "server.py"],
-      "cwd": "."
-    }
-  }
-}
-```
-
-Quit and restart opencode for the config to take effect. The tools then appear as `minizinc_list_solvers`, `minizinc_validate_model`, `minizinc_solve_model`, and `minizinc_solve_model_by_path`, and can be invoked from the chat prompt.
-
-To register the server globally instead, add the same `mcp.minizinc` block to `~/.config/opencode/opencode.json` (or `opencode.jsonc`) and point `command` at the absolute path of `server.py`.
 
 ## Notes and limitations
 

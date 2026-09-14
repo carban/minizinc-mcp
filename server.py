@@ -201,5 +201,9 @@ def solve_model_by_path(
         return {"status": "ERROR", "error": str(exc)}
 
 
-if __name__ == "__main__":
+def main() -> None:
     mcp.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()
