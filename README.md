@@ -2,7 +2,7 @@
 
 An [MCP](https://modelcontextprotocol.io) server that exposes [MiniZinc](https://www.minizinc.org/) constraint solving and optimization to LLM clients such as opencode, Claude Desktop, and Cursor. It lets an agent parse, type-check, and solve MiniZinc models directly from a chat session.
 
-Built with the [MCP Python SDK v2](https://py.sdk.modelcontextprotocol.io/) and the [`.mzn` Python binding](https://pypi.org/project/minizinc/).
+Built with the [MCP Python SDK v2](https://py.sdk.modelcontextprotocol.io/) and the [MiniZinc Python binding](https://pypi.org/project/minizinc/).
 
 ---
 
@@ -77,7 +77,11 @@ The server runs over stdio. Tell your MCP client to launch it:
 
 ### 4. Verify it works
 
-Restart your client. Four tools should now be available, prefixed with `minizinc_`: `minizinc_list_solvers`, `minizinc_validate_model`, `minizinc_solve_model`, and `minizinc_solve_model_by_path`.
+Restart your client. Four tools should now be available, prefixed with `minizinc_`: 
+- `minizinc_list_solvers`
+- `minizinc_validate_model`
+- `minizinc_solve_model`
+- `minizinc_solve_model_by_path`
 
 Quick sanity check — ask your client: _"list the available MiniZinc solvers"_. You should see `gecode`, `chuffed`, `highs`, and anything else installed on the machine.
 
