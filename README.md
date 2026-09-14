@@ -1,5 +1,9 @@
 # MiniZinc MCP Server
 
+<p align="center">
+  <img src="logo_mzn_mcp.png" alt="MiniZinc MCP Server logo" width="200">
+</p>
+
 An [MCP](https://modelcontextprotocol.io) server that exposes [MiniZinc](https://www.minizinc.org/) constraint solving and optimization to LLM clients such as opencode, Claude Desktop, and Cursor. It lets an agent parse, type-check, and solve MiniZinc models directly from a chat session.
 
 Built with the [MCP Python SDK v2](https://py.sdk.modelcontextprotocol.io/) and the [MiniZinc Python binding](https://pypi.org/project/minizinc/).
