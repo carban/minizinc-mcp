@@ -3,7 +3,7 @@
   "mcp": {
     "minizinc": {
       "type": "local",
-      "command": ["uvx", "--from", "https://github.com/carban/mzn-mcp", "minizinc-mcp"]
+      "command": ["uvx", "--from", "git+https://github.com/carban/mzn-mcp", "minizinc-mcp"]
     }
   }
 }
