@@ -1,0 +1,8 @@
+[project]
+name = "minizinc-mcp"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "mcp[cli]>=2,<3",
+    "minizinc>=0.9,<1",
+]
