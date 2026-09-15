@@ -10,7 +10,13 @@ Built with the [MCP Python SDK v2](https://py.sdk.modelcontextprotocol.io/) and 
 
 ---
 
-## Install for other developers
+## Demo
+
+<p align="center">
+  <img src="demo-opencode.gif" alt="MiniZinc MCP Server Demo">
+</p>
+
+## Install it
 
 ### 1. Prerequisites
 
