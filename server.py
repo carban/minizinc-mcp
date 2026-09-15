@@ -119,7 +119,13 @@ def validate_model(model_code: str, params: dict | None = None) -> dict:
 
 @mcp.tool(
     name="solve_model",
-    description="Solve a MiniZinc model",
+    description=(
+        "Solve a MiniZinc constraint model given as source code. Present the solving "
+        "result to the user as a short summary plus a Markdown table of the output "
+        "variables instead of dumping the raw JSON: scalars as one row per variable, "
+        "1-D arrays as index/value rows, and multi-dimensional arrays as a grid with "
+        "row and column indices."
+    ),
     annotations=ToolAnnotations(open_world_hint=False),
 )
 def solve_model(
@@ -172,7 +178,13 @@ def solve_model(
 
 @mcp.tool(
     name="solve_model_by_path",
-    description="Solve a MiniZinc model given by file paths",
+    description=(
+        "Solve a MiniZinc constraint model given by file paths. Present the solving "
+        "result to the user as a short summary plus a Markdown table of the output "
+        "variables instead of dumping the raw JSON: scalars as one row per variable, "
+        "1-D arrays as index/value rows, and multi-dimensional arrays as a grid with "
+        "row and column indices."
+    ),
     annotations=ToolAnnotations(open_world_hint=False),
 )
 def solve_model_by_path(
@@ -225,7 +237,11 @@ def solve_model_by_path(
 
 @mcp.tool(
     name="get_model_info",
-    description="Describe a MiniZinc model without solving it",
+    description=(
+        "Describe a MiniZinc model without solving it. Present the result to the user "
+        "as the solve method plus two Markdown tables (name/type) for the input "
+        "parameters and the output variables, instead of dumping the raw JSON."
+    ),
     annotations=ToolAnnotations(open_world_hint=False),
 )
 def get_model_info(model_code: str, params: dict | str | None = None) -> dict:

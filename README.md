@@ -134,6 +134,8 @@ The result is a JSON object like:
 
 `status` is one of `SATISFIED`, `OPTIMAL_SOLUTION`, `ALL_SOLUTIONS`, `UNSATISFIABLE`, `UNKNOWN`, or `ERROR`. `validate_model` and `solve_model` never raise in normal operation — errors are returned inside the result dict.
 
+The tool descriptions also instruct the client agent to present solving results and model info to you as Markdown tables instead of raw JSON, so `solve_model` answers read like a table of output variables even though the tool itself always returns structured JSON.
+
 ---
 
 ## Developing locally
