@@ -2,7 +2,7 @@
   "mcpServers": {
     "server-name": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/carban/mzn-mcp", "minizinc-mcp"],
+      "args": ["--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"],
     }
   }
 }

@@ -32,13 +32,13 @@ Everything else is fetched automatically by `uv` — there is **no clone, no ven
 Install it globally (best if you use it in several projects):
 
 ```sh
-uv tool install --from git+https://github.com/carban/mzn-mcp minizinc-mcp
+uv tool install --from git+https://github.com/carban/minizinc-mcp minizinc-mcp
 ```
 
 Or run it on demand each time, with nothing installed:
 
 ```sh
-uvx --from git+https://github.com/carban/mzn-mcp minizinc-mcp
+uvx --from git+https://github.com/carban/minizinc-mcp minizinc-mcp
 ```
 
 ### 3. Wire it into your MCP client
@@ -53,7 +53,7 @@ The server runs over stdio. Tell your MCP client to launch it:
   "mcp": {
     "minizinc": {
       "type": "local",
-      "command": ["uvx", "--from", "git+https://github.com/carban/mzn-mcp", "minizinc-mcp"]
+      "command": ["uvx", "--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]
     }
   }
 }
@@ -66,7 +66,7 @@ The server runs over stdio. Tell your MCP client to launch it:
   "mcp": {
     "minizinc": {
       "type": "local",
-      "command": ["uvx", "--from", "git+https://github.com/carban/mzn-mcp", "minizinc-mcp"]
+      "command": ["uvx", "--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]
     }
   }
 }
@@ -79,7 +79,7 @@ The server runs over stdio. Tell your MCP client to launch it:
   "mcpServers": {
     "minizinc": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/carban/mzn-mcp", "minizinc-mcp"]
+      "args": ["--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]
     }
   }
 }
