@@ -1,6 +1,6 @@
 ---
 name: minizinc
-description: Use when the user asks to model, formulate, validate, or solve a constraint satisfaction/problem, constraint programming (CP), combinatorial, or optimization problem (scheduling, packing, routing, assignment, knapsack, graphs, Sudoku, etc.) with MiniZinc. Drives the minizinc_* MCP tools: type-checking models, running solvers, and presenting results as Markdown tables.
+description: Use when the user asks to model, formulate, validate, or solve a constraint satisfaction/problem, constraint programming (CP), combinatorial, or optimization problem (scheduling, packing, routing, assignment, knapsack, graphs, Sudoku, etc.) with MiniZinc. Drives the minizinc_* MCP tools type-checking models, running solvers, and presenting results as Markdown tables.
 ---
 
 # MiniZinc Skill
