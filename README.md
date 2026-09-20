@@ -101,6 +101,55 @@ Quick sanity check — ask your client: _"list the available MiniZinc solvers"_.
 
 ---
 
+## Using the MiniZinc skill with opencode
+
+The [`skills/minizinc/`](skills/minizinc/SKILL.md) folder contains an opencode **skill** that steers an agent through constraint programming, combinatorial, and optimization work: modeling problems with MiniZinc, type-checking models, running solvers, and rendering results as Markdown tables (instead of raw JSON).
+
+The skill lives in a top-level `skills/` folder so it is visible in the repo, but opencode does **not** auto-discover it from there — you must install it first.
+
+### 1. Prerequisite
+
+Register the MCP server as shown in the [Wire it into your MCP client](#3-wire-it-into-your-mcp-client) section above.
+
+### 2. Install the skill (pick one)
+
+Copy it into a project where you want it active (auto-discovered by opencode, no config needed):
+
+```sh
+cp -r skills/minizinc <your-project>/.opencode/skills/
+```
+
+Or install it globally so it is available in every project:
+
+```sh
+cp -r skills/minizinc ~/.config/opencode/skills/
+```
+
+Or point opencode at this repo's `skills/` folder (scanned recursively for `SKILL.md`) by adding to `opencode.json`:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "skills": {
+    "paths": ["/path/to/minizinc-mcp/skills"]
+  }
+}
+```
+
+Claude Code users can copy the folder to `~/.claude/skills/minizinc/` instead of `~/.config/opencode/skills/`.
+
+### 3. Use it
+
+Restart your client, then simply describe a problem. For example:
+
+- _"Solve this knapsack as a MiniZinc model."_
+- _"Optimize a production schedule with MiniZinc."_
+- _"Write a MiniZinc model for this timetabling problem and check it."_
+
+The skill activates automatically and drives the `minizinc_*` tools — modeling, validating, solving, and presenting results as tables.
+
+---
+
 ## What it does
 
 | Tool | Description |
