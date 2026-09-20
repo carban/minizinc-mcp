@@ -85,7 +85,12 @@ def _result_to_dict(result: minizinc.Result) -> dict:
 @mcp.tool(
     name="list_solvers",
     description="List MiniZinc solvers",
-    annotations=ToolAnnotations(open_world_hint=False),
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def list_solvers() -> list[str]:
     """List all MiniZinc solvers available on this machine, as tag names usable as the
@@ -96,7 +101,12 @@ def list_solvers() -> list[str]:
 @mcp.tool(
     name="validate_model",
     description="Validate a MiniZinc model",
-    annotations=ToolAnnotations(open_world_hint=False),
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def validate_model(model_code: str, params: dict | None = None) -> dict:
     """Parse and type-check a MiniZinc model without solving it.
@@ -126,7 +136,12 @@ def validate_model(model_code: str, params: dict | None = None) -> dict:
         "1-D arrays as index/value rows, and multi-dimensional arrays as a grid with "
         "row and column indices."
     ),
-    annotations=ToolAnnotations(open_world_hint=False),
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def solve_model(
     model_code: str,
@@ -185,7 +200,12 @@ def solve_model(
         "1-D arrays as index/value rows, and multi-dimensional arrays as a grid with "
         "row and column indices."
     ),
-    annotations=ToolAnnotations(open_world_hint=False),
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=True,
+    ),
 )
 def solve_model_by_path(
     model_path: str,
@@ -242,7 +262,12 @@ def solve_model_by_path(
         "as the solve method plus two Markdown tables (name/type) for the input "
         "parameters and the output variables, instead of dumping the raw JSON."
     ),
-    annotations=ToolAnnotations(open_world_hint=False),
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def get_model_info(model_code: str, params: dict | str | None = None) -> dict:
     """Parse a MiniZinc model and return its solve method, declared parameters,
@@ -282,7 +307,12 @@ def get_model_info(model_code: str, params: dict | str | None = None) -> dict:
 @mcp.tool(
     name="get_flatzinc",
     description="Flatten a MiniZinc model to FlatZinc without solving it",
-    annotations=ToolAnnotations(open_world_hint=False),
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
 )
 def get_flatzinc(
     model_code: str,
