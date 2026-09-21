@@ -16,5 +16,8 @@ dependencies = [
 [project.scripts]
 minizinc-mcp = "server:main"
 
+[tool.setuptools]
+py-modules = ["server"]
+
 [dependency-groups]
 dev = ["pytest>=8"]
