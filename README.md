@@ -89,7 +89,8 @@ The server runs over stdio. Tell your MCP client to launch it:
 
 ### 4. Verify it works
 
-Restart your client. Six tools should now be available, prefixed with `minizinc_`: 
+Restart your client. Seven tools should now be available, prefixed with `minizinc_`:
+- `minizinc_list_tools`
 - `minizinc_list_solvers`
 - `minizinc_validate_model`
 - `minizinc_solve_model`
@@ -154,6 +155,7 @@ The skill activates automatically and drives the `minizinc_*` tools — modeling
 
 | Tool | Description |
 |---|---|
+| `list_tools` | Lists the names of all tools exposed by this MiniZinc MCP server, including `list_tools` itself. |
 | `list_solvers` | Lists every MiniZinc solver installed on the machine. The returned tag names (e.g. `gecode`, `chuffed`, `highs`) can be passed to `solve_model`. |
 | `validate_model` | Parses and type-checks MiniZinc model code **without solving it**. Useful for checking model syntax up front. Returns `VALID` or `INVALID` with an error message. |
 | `solve_model` | Solves a MiniZinc model given as source code: once, exhaustively (`all_solutions`), or with a solution / time limit. Returns the status, solution(s), objective value (for optimization problems), and solver statistics. |

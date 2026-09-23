@@ -22,6 +22,7 @@ Use the `minizinc_*` MCP tools to model, check, and solve constraint problems wi
 
 ## Tools
 
+- `minizinc_list_tools` — List the tools exposed by this MiniZinc MCP server.
 - `minizinc_list_solvers` — List installed solvers before solving. Use `gecode`/`chuffed` for CP models and `highs`/`cbc` for MIP/LP models.
 - `minizinc_get_model_info` — Inspect a model without solving it: its solve method and the declared input parameters and output variables with types. Use this first when handed a model you must call with `params`.
 - `minizinc_validate_model` — Parse and type-check `model_code` (with optional `params`) after writing or editing a model. Fast feedback without solving.

@@ -83,6 +83,21 @@ def _result_to_dict(result: minizinc.Result) -> dict:
 
 
 @mcp.tool(
+    name="list_tools",
+    description="List the tools exposed by this MiniZinc MCP server",
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
+)
+async def list_tools() -> list[str]:
+    """List the names of all tools exposed by this MiniZinc MCP server."""
+    return [tool.name for tool in await mcp.list_tools()]
+
+
+@mcp.tool(
     name="list_solvers",
     description="List MiniZinc solvers",
     annotations=ToolAnnotations(

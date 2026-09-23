@@ -15,6 +15,15 @@ DATA = {
     "rname": ["flour", "banana", "sugar", "butter", "cocoa"],
     "consumption": [[250, 2, 75, 100, 0], [200, 0, 150, 150, 75]],
 }
+TOOL_NAMES = {
+    "list_solvers",
+    "list_tools",
+    "validate_model",
+    "solve_model",
+    "solve_model_by_path",
+    "get_model_info",
+    "get_flatzinc",
+}
 PARAMS = StdioServerParameters(command="uv", args=["run", "minizinc-mcp"], cwd=str(REPO))
 
 
@@ -36,15 +45,12 @@ async def tool_names():
 
 def test_tools_are_registered():
     names = run(tool_names())
-    expected = {
-        "list_solvers",
-        "validate_model",
-        "solve_model",
-        "solve_model_by_path",
-        "get_model_info",
-        "get_flatzinc",
-    }
-    assert expected <= names
+    assert TOOL_NAMES <= names
+
+
+def test_list_tools():
+    out = run(tool("list_tools"))
+    assert set(out.splitlines()) == TOOL_NAMES
 
 
 def test_list_solvers():
