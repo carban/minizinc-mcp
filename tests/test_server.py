@@ -1,6 +1,8 @@
 import asyncio
+import json
 from pathlib import Path
 
+import server
 from mcp import Client
 from mcp.client.stdio import StdioServerParameters
 
@@ -20,6 +22,7 @@ TOOL_NAMES = {
     "list_tools",
     "validate_model",
     "solve_model",
+    "compare_solvers",
     "solve_model_by_path",
     "get_model_info",
     "get_flatzinc",
@@ -65,6 +68,60 @@ def test_solve_model():
     out = run(tool("solve_model", {"model_code": MODEL.read_text(), "params": DATA}))
     assert "OPTIMAL_SOLUTION" in out
     assert '"objective": 1700' in out
+
+
+def test_compare_solvers_forwards_each_run(monkeypatch):
+    calls = []
+
+    def fake_solve_model(**kwargs):
+        calls.append(kwargs)
+        return {"status": "SATISFIED", "solver": kwargs["solver"]}
+
+    monkeypatch.setattr(server, "solve_model", fake_solve_model)
+    result = server.compare_solvers(
+        model_code="var 1..3: x; solve satisfy;",
+        solvers=["gecode", "chuffed"],
+        params={"limit": 3},
+        all_solutions=False,
+        max_solutions=1,
+        timeout_seconds=5,
+    )
+
+    assert result == {
+        "results": {
+            "gecode": {"status": "SATISFIED", "solver": "gecode"},
+            "chuffed": {"status": "SATISFIED", "solver": "chuffed"},
+        }
+    }
+    assert calls == [
+        {
+            "model_code": "var 1..3: x; solve satisfy;",
+            "params": {"limit": 3},
+            "solver": solver,
+            "all_solutions": False,
+            "max_solutions": 1,
+            "timeout_seconds": 5,
+        }
+        for solver in ["gecode", "chuffed"]
+    ]
+
+
+def test_compare_solvers_preserves_individual_errors():
+    out = run(
+        tool(
+            "compare_solvers",
+            {
+                "model_code": MODEL.read_text(),
+                "params": DATA,
+                "solvers": ["gecode", "missing-test-solver"],
+            },
+        )
+    )
+    result = json.loads(out)["results"]
+
+    assert result["gecode"]["status"] == "OPTIMAL_SOLUTION"
+    assert result["gecode"]["objective"] == 1700
+    assert result["missing-test-solver"]["status"] == "ERROR"
 
 
 def test_solve_model_by_path():

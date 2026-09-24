@@ -207,6 +207,57 @@ def solve_model(
 
 
 @mcp.tool(
+    name="compare_solvers",
+    description=(
+        "Solve a MiniZinc model once with each requested solver and compare the "
+        "results. Present the results to the user as a Markdown table with one row "
+        "per solver instead of dumping the raw JSON."
+    ),
+    annotations=ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    ),
+)
+def compare_solvers(
+    model_code: str,
+    solvers: list[str],
+    params: dict | None = None,
+    all_solutions: bool = False,
+    max_solutions: int | None = None,
+    timeout_seconds: int | None = None,
+) -> dict:
+    """Solve a MiniZinc model once with each requested solver.
+
+    Args:
+        model_code: The MiniZinc (.mzn) source code of the model.
+        solvers: MiniZinc solver tag names to use (see list_solvers).
+        params: Optional object mapping parameter names to values, passed unchanged
+            to every solve.
+        all_solutions: If True, compute all solutions of a satisfy problem.
+        max_solutions: Stop after finding at most this many solutions.
+        timeout_seconds: Per-solver time limit in seconds.
+
+    Returns:
+        A dict with a "results" mapping from each solver name to the corresponding
+        solve_model result. A failure for one solver does not stop the other runs.
+    """
+    results = {
+        solver: solve_model(
+            model_code=model_code,
+            params=params,
+            solver=solver,
+            all_solutions=all_solutions,
+            max_solutions=max_solutions,
+            timeout_seconds=timeout_seconds,
+        )
+        for solver in solvers
+    }
+    return {"results": results}
+
+
+@mcp.tool(
     name="solve_model_by_path",
     description=(
         "Solve a MiniZinc constraint model given by file paths. Present the solving "

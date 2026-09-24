@@ -89,11 +89,12 @@ The server runs over stdio. Tell your MCP client to launch it:
 
 ### 4. Verify it works
 
-Restart your client. Seven tools should now be available, prefixed with `minizinc_`:
+Restart your client. Eight tools should now be available, prefixed with `minizinc_`:
 - `minizinc_list_tools`
 - `minizinc_list_solvers`
 - `minizinc_validate_model`
 - `minizinc_solve_model`
+- `minizinc_compare_solvers`
 - `minizinc_solve_model_by_path`
 - `minizinc_get_model_info`
 - `minizinc_get_flatzinc`
@@ -104,7 +105,7 @@ Quick sanity check — ask your client: _"list the available MiniZinc solvers"_.
 
 ## Using the MiniZinc skill with opencode
 
-The [`skills/minizinc/`](skills/minizinc/SKILL.md) folder contains an opencode **skill** that steers an agent through constraint programming, combinatorial, and optimization work: modeling problems with MiniZinc, type-checking models, running solvers, and rendering results as Markdown tables (instead of raw JSON).
+The [`skills/minizinc/`](skills/minizinc/SKILL.md) folder contains an opencode **skill** that steers an agent through constraint programming, combinatorial, and optimization work: modeling problems with MiniZinc, type-checking models, running or comparing solvers, and rendering results as Markdown tables (instead of raw JSON).
 
 The skill lives in a top-level `skills/` folder so it is visible in the repo, but opencode does **not** auto-discover it from there — you must install it first.
 
@@ -145,9 +146,10 @@ Restart your client, then simply describe a problem. For example:
 
 - _"Solve this knapsack as a MiniZinc model."_
 - _"Optimize a production schedule with MiniZinc."_
+- _"Compare the available solvers on this model and recommend one."_
 - _"Write a MiniZinc model for this timetabling problem and check it."_
 
-The skill activates automatically and drives the `minizinc_*` tools — modeling, validating, solving, and presenting results as tables.
+The skill activates automatically and drives the `minizinc_*` tools — modeling, validating, solving, comparing solvers, and presenting results as tables.
 
 ---
 
@@ -159,6 +161,7 @@ The skill activates automatically and drives the `minizinc_*` tools — modeling
 | `list_solvers` | Lists every MiniZinc solver installed on the machine. The returned tag names (e.g. `gecode`, `chuffed`, `highs`) can be passed to `solve_model`. |
 | `validate_model` | Parses and type-checks MiniZinc model code **without solving it**. Useful for checking model syntax up front. Returns `VALID` or `INVALID` with an error message. |
 | `solve_model` | Solves a MiniZinc model given as source code: once, exhaustively (`all_solutions`), or with a solution / time limit. Returns the status, solution(s), objective value (for optimization problems), and solver statistics. |
+| `compare_solvers` | Solves the same model once with each requested solver and returns the individual `solve_model` results keyed by solver name. Use this for solver comparisons and performance evaluation. |
 | `solve_model_by_path` | Same as `solve_model` but loads the model and its optional data (`.dzn`) file from paths instead of source code. |
 | `get_model_info` | Inspects a model **without solving it**: returns its solve method (satisfy/minimize/maximize) and the declared input parameters and output variables with their types. Useful for an agent to know exactly which `params` a model expects. |
 | `get_flatzinc` | Compiles a model (and optional data) to FlatZinc text without solving it. Returns the `.fzn` model, the `.ozn` output model, and flattening statistics. Useful for debugging and low-level inspection. |
@@ -174,7 +177,37 @@ The skill activates automatically and drives the `minizinc_*` tools — modeling
 | `max_solutions` | `int \| None` | `None` | Stop after at most this many solutions. |
 | `timeout_seconds` | `int \| None` | `None` | Solver time limit in seconds. |
 
-The result is a JSON object like:
+### `compare_solvers` arguments
+
+| Argument | Type | Default | Description |
+|---|---|---|---|
+| `model_code` | `str` | (required) | The same MiniZinc source model to pass to every solver. |
+| `solvers` | `list[str]` | (required) | Solver tag names to run, normally from `list_solvers`. |
+| `params` | `dict \| None` | `None` | The same parameter assignments to pass to every solver. |
+| `all_solutions` | `bool` | `False` | Compute all solutions of a `solve satisfy` problem with every solver. |
+| `max_solutions` | `int \| None` | `None` | Stop each solver after finding at most this many solutions. |
+| `timeout_seconds` | `int \| None` | `None` | Per-solver time limit in seconds. |
+
+`compare_solvers` calls `solve_model` once per requested solver and returns each result under `results`, keyed by solver name. A solver error is retained in that solver's result without stopping the remaining runs. The shape is:
+
+```json
+{
+  "results": {
+    "gecode": {
+      "status": "OPTIMAL_SOLUTION",
+      "objective": 1700,
+      "statistics": { "time": 0.01, "nodes": 12 }
+    },
+    "chuffed": {
+      "status": "OPTIMAL_SOLUTION",
+      "objective": 1700,
+      "statistics": { "time": 0.02, "nodes": 8 }
+    }
+  }
+}
+```
+
+The `solve_model` result is a JSON object like:
 
 ```json
 {
@@ -185,9 +218,9 @@ The result is a JSON object like:
 }
 ```
 
-`status` is one of `SATISFIED`, `OPTIMAL_SOLUTION`, `ALL_SOLUTIONS`, `UNSATISFIABLE`, `UNKNOWN`, or `ERROR`. `validate_model` and `solve_model` never raise in normal operation — errors are returned inside the result dict.
+`status` is one of `SATISFIED`, `OPTIMAL_SOLUTION`, `ALL_SOLUTIONS`, `UNSATISFIABLE`, `UNKNOWN`, or `ERROR`. `validate_model`, `solve_model`, and each individual `compare_solvers` run never raise in normal operation — errors are returned inside the result dict.
 
-The tool descriptions also instruct the client agent to present solving results and model info to you as Markdown tables instead of raw JSON, so `solve_model` answers read like a table of output variables even though the tool itself always returns structured JSON.
+The tool descriptions also instruct the client agent to present solving results, solver comparisons, and model info to you as Markdown tables instead of raw JSON, so `solve_model` and `compare_solvers` answers read like tables even though the tools themselves always return structured JSON.
 
 ---
 
