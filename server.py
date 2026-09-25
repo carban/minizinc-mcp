@@ -82,6 +82,25 @@ def _result_to_dict(result: minizinc.Result) -> dict:
     return payload
 
 
+def _solve_instance(
+    instance: minizinc.Instance,
+    *,
+    all_solutions: bool = False,
+    max_solutions: int | None = None,
+    timeout_seconds: int | None = None,
+) -> dict:
+    """Execute a prepared MiniZinc instance with the shared solve options."""
+    solve_kwargs = {}
+    if all_solutions:
+        solve_kwargs["all_solutions"] = True
+    if max_solutions is not None:
+        solve_kwargs["nr_solutions"] = max_solutions
+    if timeout_seconds is not None:
+        solve_kwargs["timeout"] = datetime.timedelta(seconds=timeout_seconds)
+
+    return _result_to_dict(instance.solve(**solve_kwargs))
+
+
 @mcp.tool(
     name="list_tools",
     description="List the tools exposed by this MiniZinc MCP server",
@@ -192,16 +211,12 @@ def solve_model(
         if params:
             _set_params(instance, params)
 
-        solve_kwargs = {}
-        if all_solutions:
-            solve_kwargs["all_solutions"] = True
-        if max_solutions is not None:
-            solve_kwargs["nr_solutions"] = max_solutions
-        if timeout_seconds is not None:
-            solve_kwargs["timeout"] = datetime.timedelta(seconds=timeout_seconds)
-
-        result = instance.solve(**solve_kwargs)
-        return _result_to_dict(result)
+        return _solve_instance(
+            instance,
+            all_solutions=all_solutions,
+            max_solutions=max_solutions,
+            timeout_seconds=timeout_seconds,
+        )
     except Exception as exc:
         return {"status": "ERROR", "error": str(exc)}
 
@@ -307,16 +322,12 @@ def solve_model_by_path(
         if data_path:
             instance.add_file(data_path)
 
-        solve_kwargs = {}
-        if all_solutions:
-            solve_kwargs["all_solutions"] = True
-        if max_solutions is not None:
-            solve_kwargs["nr_solutions"] = max_solutions
-        if timeout_seconds is not None:
-            solve_kwargs["timeout"] = datetime.timedelta(seconds=timeout_seconds)
-
-        result = instance.solve(**solve_kwargs)
-        return _result_to_dict(result)
+        return _solve_instance(
+            instance,
+            all_solutions=all_solutions,
+            max_solutions=max_solutions,
+            timeout_seconds=timeout_seconds,
+        )
     except Exception as exc:
         return {"status": "ERROR", "error": str(exc)}
 
