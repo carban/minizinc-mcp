@@ -31,17 +31,35 @@ Everything else is fetched automatically by `uv` — there is **no clone, no ven
 
 ### 2. Install the server (pick one)
 
-Install it globally (best if you use it in several projects):
+#### From PyPI (recommended)
+
+Install the latest released version globally (best if you use it in several projects):
+
+```sh
+uv tool install minizinc-mcp
+```
+
+Or run the latest released version on demand, with nothing installed:
+
+```sh
+uvx minizinc-mcp
+```
+
+#### From GitHub (latest development version)
+
+To run the latest development version directly from the repository, use:
+
+```sh
+uvx --from git+https://github.com/carban/minizinc-mcp minizinc-mcp
+```
+
+To install that development version globally instead:
 
 ```sh
 uv tool install --from git+https://github.com/carban/minizinc-mcp minizinc-mcp
 ```
 
-Or run it on demand each time, with nothing installed:
-
-```sh
-uvx --from git+https://github.com/carban/minizinc-mcp minizinc-mcp
-```
+The GitHub installation tracks the repository's `main` branch; PyPI provides released versions.
 
 ### 3. Wire it into your MCP client
 
@@ -55,7 +73,7 @@ The server runs over stdio. Tell your MCP client to launch it:
   "mcp": {
     "minizinc": {
       "type": "local",
-      "command": ["uvx", "--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]
+      "command": ["uvx", "minizinc-mcp"]
     }
   }
 }
@@ -68,7 +86,7 @@ The server runs over stdio. Tell your MCP client to launch it:
   "mcp": {
     "minizinc": {
       "type": "local",
-      "command": ["uvx", "--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]
+      "command": ["uvx", "minizinc-mcp"]
     }
   }
 }
@@ -81,11 +99,13 @@ The server runs over stdio. Tell your MCP client to launch it:
   "mcpServers": {
     "minizinc": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]
+      "args": ["minizinc-mcp"]
     }
   }
 }
 ```
+
+If you are using the GitHub installation instead, replace `["uvx", "minizinc-mcp"]` in the opencode configuration with `["uvx", "--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]`, and replace the Claude Desktop arguments with `["--from", "git+https://github.com/carban/minizinc-mcp", "minizinc-mcp"]`.
 
 ### 4. Verify it works
 
