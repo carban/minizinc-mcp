@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,11 +7,38 @@ name = "minizinc-mcp"
 version = "0.1.0"
 description = "MCP server that exposes MiniZinc constraint solving to LLM clients"
 readme = "README.md"
+authors = [{ name = "carban" }]
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = [
+    "mcp",
+    "minizinc",
+    "constraint-programming",
+    "optimization",
+    "llm",
+    "model-context-protocol",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 requires-python = ">=3.10"
 dependencies = [
     "mcp[cli]>=2,<3",
     "minizinc>=0.9,<1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/carban/minizinc-mcp"
+Repository = "https://github.com/carban/minizinc-mcp"
+Issues = "https://github.com/carban/minizinc-mcp/issues"
 
 [project.scripts]
 minizinc-mcp = "server:main"
