@@ -4,7 +4,12 @@
   <img src="logo_mzn_mcp.png" alt="MiniZinc MCP Server logo" width="400">
 </p>
 
-[![M8ven Score](https://m8ven.ai/badge/mcp/carban/minizinc-mcp)](https://m8ven.ai/mcp/carban/minizinc-mcp)
+<div align="center">
+  
+  [![M8ven Score](https://m8ven.ai/badge/mcp/carban/minizinc-mcp)](https://m8ven.ai/mcp/carban/minizinc-mcp)
+  [![PyPI Version](https://img.shields.io/pypi/v/minizinc-mcp?logo=python&logoColor=white&color=blue)](https://pypi.org/project/minizinc-mcp/)
+
+</div>
 
 An [MCP](https://modelcontextprotocol.io) server that exposes [MiniZinc](https://www.minizinc.org/) constraint solving and optimization to LLM clients such as opencode, Claude Desktop, and Cursor. It lets an agent parse, type-check, and solve MiniZinc models directly from a chat session.
 
